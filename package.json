@@ -1,0 +1,17 @@
+{
+  "name": "ratublast",
+  "version": "1.0.0",
+  "private": true,
+  "scripts": { "start": "node server.js" },
+  "dependencies": {
+    "@whiskeysockets/baileys": "^6.7.0",
+    "@hapi/boom": "^10.0.1",
+    "express": "^4.19.2",
+    "jsonwebtoken": "^9.0.2",
+    "bcryptjs": "^2.4.3",
+    "better-sqlite3": "^11.3.0",
+    "pino": "^9.0.0",
+    "qrcode": "^1.5.3"
+  },
+  "engines": { "node": ">=20" }
+}

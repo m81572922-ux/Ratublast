@@ -1,0 +1,989 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,maximum-scale=1">
+<title>Ratublast</title>
+<style>
+:root{--bg:#0a0a12;--panel:#12121f;--panel2:#1a1a2e;--border:#262641;--text:#e8e8f0;--muted:#7a7a9a;--purple:#8b5cf6;--cyan:#22d3ee;--green:#22c55e;--red:#ef4444;--yellow:#fbbf24}
+*{box-sizing:border-box;margin:0;padding:0;-webkit-tap-highlight-color:transparent}
+body{font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',Roboto,sans-serif;background:var(--bg);color:var(--text);font-size:14px;min-height:100vh;overflow-x:hidden}
+input,select,button,textarea{font-family:inherit;font-size:14px}
+input,select,textarea{width:100%;background:var(--panel2);border:1px solid var(--border);color:var(--text);padding:11px 13px;border-radius:10px;outline:none}
+input:focus,select:focus,textarea:focus{border-color:var(--purple)}
+label{display:block;color:var(--muted);font-size:11px;margin-bottom:5px;letter-spacing:.5px;text-transform:uppercase}
+button{cursor:pointer;border:none;border-radius:10px;padding:11px 16px;font-weight:600;color:#fff;background:var(--purple);font-size:13px}
+button:active{opacity:.75}
+button:disabled{opacity:.4}
+button.ghost{background:transparent;border:1px solid var(--border);color:var(--text)}
+button.cyan{background:var(--cyan);color:#06222b}
+button.green{background:var(--green)}
+button.red{background:var(--red)}
+button.sm{padding:7px 11px;font-size:11px;border-radius:8px}
+#login-screen{display:flex;align-items:center;justify-content:center;min-height:100vh;padding:20px}
+.login-card{position:relative;width:100%;max-width:400px;background:var(--panel);border:1px solid var(--border);border-radius:18px;padding:26px 22px}
+.logo{text-align:center;margin-bottom:22px}
+.logo-mark{width:66px;height:66px;margin:0 auto 12px;background:linear-gradient(135deg,var(--purple),var(--cyan));border-radius:18px;display:flex;align-items:center;justify-content:center;font-size:28px;font-weight:900;box-shadow:0 0 30px rgba(139,92,246,.5)}
+.logo h1{font-size:22px;letter-spacing:1px}
+.logo p{color:var(--muted);font-size:12px;margin-top:4px}
+.field{margin-bottom:12px}
+.tabs-auth{display:flex;background:var(--panel2);border-radius:10px;padding:4px;margin-bottom:16px}
+.tabs-auth button{flex:1;background:transparent;color:var(--muted);font-weight:500;padding:9px;font-size:12px}
+.tabs-auth button.active{background:var(--purple);color:#fff}
+.lang-btn{position:absolute;top:14px;right:16px}
+.lang-btn>button{padding:5px 10px;font-size:11px}
+.lang-menu{display:none;position:absolute;top:36px;right:0;background:var(--panel2);border:1px solid var(--border);border-radius:10px;padding:6px;min-width:140px;box-shadow:0 8px 30px rgba(0,0,0,.5);z-index:10}
+.lang-menu>div{padding:9px 12px;border-radius:8px;cursor:pointer;font-size:12px}
+.verify-box{display:flex;align-items:center;gap:10px;background:var(--panel2);border:1px solid var(--border);padding:12px;border-radius:10px;cursor:pointer;margin-bottom:12px}
+.verify-box input{width:18px;height:18px;flex:0 0 auto;accent-color:var(--purple)}
+.verify-box span{font-size:12px;text-transform:none;letter-spacing:0}
+#app{display:none;padding-bottom:88px}
+header{position:sticky;top:0;background:rgba(10,10,18,.94);backdrop-filter:blur(12px);padding:12px 16px;border-bottom:1px solid var(--border);display:flex;align-items:center;justify-content:space-between;z-index:50}
+.hbrand{display:flex;align-items:center;gap:9px;font-weight:700;font-size:15px}
+.hbrand .dot{width:26px;height:26px;background:linear-gradient(135deg,var(--purple),var(--cyan));border-radius:8px;display:flex;align-items:center;justify-content:center;font-size:12px;font-weight:900}
+.huser{font-size:11px;color:var(--muted);text-align:right}
+.huser b{color:var(--text);display:block;font-size:13px}
+.role-pill{display:inline-block;font-size:9px;padding:2px 6px;border-radius:20px;background:rgba(139,92,246,.2);color:var(--purple);font-weight:600;letter-spacing:.5px;margin-left:6px;vertical-align:middle}
+main{padding:16px}
+.tabpage{display:none}
+.tabpage.active{display:block}
+.card{background:var(--panel);border:1px solid var(--border);border-radius:14px;padding:15px;margin-bottom:13px}
+.card h3{font-size:15px;margin-bottom:11px;display:flex;align-items:center;justify-content:space-between;gap:8px}
+.badge{font-size:10px;padding:3px 8px;border-radius:20px;background:var(--panel2);color:var(--muted);font-weight:500;letter-spacing:.5px;white-space:nowrap}
+.badge.ok{background:rgba(34,197,94,.15);color:var(--green)}
+.badge.warn{background:rgba(251,191,36,.15);color:var(--yellow)}
+.badge.err{background:rgba(239,68,68,.15);color:var(--red)}
+.badge.info{background:rgba(34,211,238,.15);color:var(--cyan)}
+.badge.purple{background:rgba(139,92,246,.15);color:var(--purple)}
+.grid-2{display:grid;grid-template-columns:1fr 1fr;gap:11px}
+.grid-4{display:grid;grid-template-columns:1fr 1fr;gap:10px}
+.stat{background:var(--panel);border:1px solid var(--border);border-radius:12px;padding:13px}
+.stat .lbl{font-size:10px;color:var(--muted);letter-spacing:1px;text-transform:uppercase;margin-bottom:5px}
+.stat .val{font-size:21px;font-weight:700}
+.stat .val.purple{color:var(--purple)}.stat .val.cyan{color:var(--cyan)}
+.stat .val.green{color:var(--green)}.stat .val.yellow{color:var(--yellow)}
+.stat .val.red{color:var(--red)}
+.row-btn{display:flex;gap:7px;flex-wrap:wrap}
+.row-btn button{flex:1;min-width:80px}
+.dev-item{background:var(--panel2);border:1px solid var(--border);border-radius:12px;padding:12px;margin-bottom:10px}
+.dev-top{display:flex;align-items:center;justify-content:space-between;margin-bottom:6px;gap:8px;flex-wrap:wrap}
+.dev-name{font-weight:600;font-size:14px}
+.dev-info{font-size:11px;color:var(--muted);margin-bottom:10px;line-height:1.6}
+.dev-grid{display:grid;grid-template-columns:1fr 1fr;gap:8px;margin-bottom:10px}
+.dev-grid .fld select,.dev-grid .fld input{padding:7px 9px;font-size:12px;border-radius:7px}
+.dev-actions{display:flex;gap:6px;flex-wrap:wrap}
+table{width:100%;border-collapse:collapse;font-size:12px}
+table th{text-align:left;color:var(--muted);font-weight:500;font-size:10px;letter-spacing:1px;text-transform:uppercase;padding:7px 5px;border-bottom:1px solid var(--border)}
+table td{padding:8px 5px;border-bottom:1px solid var(--border);word-break:break-word}
+.bottom-nav{position:fixed;bottom:0;left:0;right:0;background:rgba(10,10,18,.97);backdrop-filter:blur(14px);border-top:1px solid var(--border);display:flex;z-index:60;padding:6px 0 max(6px,env(safe-area-inset-bottom));overflow-x:auto}
+.bottom-nav button{flex:1;min-width:54px;background:transparent;color:var(--muted);padding:6px 2px;display:flex;flex-direction:column;align-items:center;gap:2px;font-size:9px;font-weight:500;border-radius:8px}
+.bottom-nav button .ic{font-size:17px}
+.bottom-nav button.active{color:var(--purple);background:rgba(139,92,246,.1)}
+.msg-item{background:var(--panel2);border-radius:10px;padding:10px 12px;margin-bottom:7px;display:flex;justify-content:space-between;align-items:flex-start;gap:10px;font-size:12px}
+.msg-item .mtext{flex:1;word-break:break-word;line-height:1.5}
+.msg-item .mdel{color:var(--red);background:transparent;padding:0;font-size:16px}
+.toast{position:fixed;top:18px;left:50%;transform:translateX(-50%);background:var(--panel2);border:1px solid var(--border);padding:11px 18px;border-radius:10px;font-size:13px;z-index:999;opacity:0;pointer-events:none;transition:opacity .2s;max-width:90vw;text-align:center}
+.toast.show{opacity:1}
+.toast.err{border-color:var(--red);color:#fecaca}
+.toast.ok{border-color:var(--green);color:#bbf7d0}
+.empty{text-align:center;color:var(--muted);padding:24px 10px;font-size:12px}
+.empty .icon{font-size:28px;margin-bottom:6px;opacity:.5}
+.hint{font-size:11px;color:var(--muted);margin-top:5px;line-height:1.55}
+.hint code{background:var(--panel2);padding:1px 5px;border-radius:4px;color:var(--cyan);font-size:10.5px}
+.referral-box{background:var(--panel2);border:1px dashed var(--cyan);border-radius:10px;padding:12px}
+.referral-box .rcode{font-size:20px;font-weight:800;letter-spacing:3px;color:var(--cyan);margin-bottom:8px;user-select:all}
+.referral-box .rlink{font-size:11px;color:var(--muted);word-break:break-all;margin-bottom:10px}
+.dash-pool{background:linear-gradient(135deg,rgba(139,92,246,.12),rgba(34,211,238,.08));border-color:rgba(139,92,246,.3)}
+.admin-only{display:none}
+body.is-admin .admin-only{display:block}
+body.is-admin .nav-admin{display:flex}
+body.is-admin .user-only{display:none}
+body.is-admin .nav-user{display:none}
+.bottom-nav .nav-admin{display:none}
+.modal-bg{position:fixed;inset:0;background:rgba(0,0,0,.75);backdrop-filter:blur(4px);z-index:1000;display:none;align-items:center;justify-content:center;padding:16px}
+.modal-bg.show{display:flex}
+.modal{background:var(--panel);border:1px solid var(--border);border-radius:18px;max-width:440px;width:100%;padding:20px;max-height:92vh;overflow-y:auto}
+.modal h3{font-size:17px;margin-bottom:14px;display:flex;align-items:center;justify-content:space-between;gap:8px}
+.modal-x{background:transparent;color:var(--muted);padding:4px 8px;font-size:20px;line-height:1;flex:0 0 auto}
+.modal-btns{display:flex;gap:8px;margin-top:16px}
+.modal-btns button{flex:1}
+.pair-steps{background:var(--panel2);border-radius:12px;padding:14px;margin:12px 0}
+.pair-steps ol{padding-left:20px;line-height:1.9;font-size:12.5px}
+.pair-steps ol li b{color:var(--cyan)}
+.pair-code-box{background:linear-gradient(135deg,rgba(139,92,246,.15),rgba(34,211,238,.1));border:1px dashed var(--purple);border-radius:12px;padding:18px;text-align:center;margin:10px 0}
+.pair-code-box .lbl{font-size:10px;color:var(--muted);letter-spacing:2px;text-transform:uppercase}
+.pair-code-box .code{font-size:32px;font-weight:900;letter-spacing:8px;color:var(--cyan);margin:8px 0;user-select:all;font-family:monospace}
+.info-banner{background:rgba(139,92,246,.08);border:1px solid rgba(139,92,246,.3);border-radius:10px;padding:10px 12px;font-size:11.5px;line-height:1.5;margin-bottom:12px}
+.info-banner b{color:var(--purple)}
+.info-banner.cyan{background:rgba(34,211,238,.08);border-color:rgba(34,211,238,.3)}
+.info-banner.cyan b{color:var(--cyan)}
+.info-banner.yellow{background:rgba(251,191,36,.08);border-color:rgba(251,191,36,.3)}
+.info-banner.yellow b{color:var(--yellow)}
+.wd-detail{background:var(--bg);border-radius:8px;padding:10px;margin-top:8px;font-size:11.5px;line-height:1.7;font-family:monospace;word-break:break-all}
+.wd-detail .k{color:var(--muted)}.wd-detail .v{color:var(--cyan);font-weight:600}
+.cs-fab{position:fixed;bottom:92px;right:16px;width:56px;height:56px;background:rgba(18,18,31,.92);border:1px solid rgba(34,211,238,.4);border-radius:50%;display:none;align-items:center;justify-content:center;z-index:70;cursor:pointer;padding:0;backdrop-filter:blur(10px);box-shadow:0 0 24px rgba(34,211,238,.35)}
+.cs-fab.show{display:flex}
+.cs-fab .spiral-svg{width:38px;height:38px;animation:spinCS 8s linear infinite}
+@keyframes spinCS{to{transform:rotate(360deg)}}
+.choice-btn{width:100%;padding:14px;text-align:left;display:flex;align-items:center;gap:12px;border-radius:12px;background:transparent;border:1px solid var(--border);color:var(--text);font-weight:400}
+.choice-btn.cyan-border{border-color:rgba(34,211,238,.4)}
+.choice-btn .ic-box{width:44px;height:44px;border-radius:10px;display:flex;align-items:center;justify-content:center;font-size:20px;flex:0 0 auto;background:linear-gradient(135deg,var(--purple),var(--cyan))}
+.choice-btn .ic-box.cyan-grad{background:linear-gradient(135deg,var(--cyan),var(--purple))}
+.choice-btn .txt-box{flex:1}
+.choice-btn .txt-box .t1{font-weight:600;font-size:13.5px}
+.choice-btn .txt-box .t2{font-size:11px;color:var(--muted);margin-top:2px}
+.choice-btn .arrow{color:var(--muted);font-size:20px;padding-right:4px}
+</style>
+</head>
+<body>
+
+<div id="login-screen">
+  <div class="login-card">
+    <div class="lang-btn">
+      <button class="ghost sm" id="lang-btn" onclick="toggleLangMenu(event)">ID</button>
+      <div class="lang-menu" id="lang-menu">
+        <div onclick="setLang('id')">🇮🇩 Indonesia</div>
+        <div onclick="setLang('en')">🇬🇧 English</div>
+        <div onclick="setLang('zh')">🇨🇳 中文</div>
+      </div>
+    </div>
+    <div class="logo">
+      <div class="logo-mark">R</div>
+      <h1>Ratublast</h1>
+      <p>Broadcast WhatsApp Engine</p>
+    </div>
+    <div class="tabs-auth">
+      <button id="tab-login" class="active">MASUK</button>
+      <button id="tab-register">DAFTAR</button>
+    </div>
+    <div id="form-login">
+      <div class="field"><label>Username / Email</label><input id="login-user"></div>
+      <div class="field"><label>Password</label><input id="login-pass" type="password"></div>
+      <label class="verify-box"><input type="checkbox" id="not-robot"><span>Saya bukan robot</span></label>
+      <button style="width:100%" onclick="doLogin()">MASUK</button>
+      <p style="text-align:center;margin-top:14px;font-size:12px;color:var(--muted)">
+        Belum punya akun? <a href="javascript:void(0)" onclick="document.getElementById('tab-register').click()" style="color:var(--cyan);text-decoration:none">Daftar Sekarang</a>
+      </p>
+    </div>
+    <div id="form-register" style="display:none">
+      <div class="field"><label>Username</label><input id="reg-user"></div>
+      <div class="field"><label>Email</label><input id="reg-email" type="email"></div>
+      <div class="field"><label>Password</label><input id="reg-pass" type="password"></div>
+      <div class="field"><label>Kode Referral (opsional)</label><input id="reg-ref"></div>
+      <label class="verify-box"><input type="checkbox" id="reg-not-robot"><span>Saya bukan robot</span></label>
+      <button style="width:100%" onclick="doRegister()">DAFTAR</button>
+    </div>
+  </div>
+</div>
+
+<div id="app">
+  <header>
+    <div class="hbrand"><div class="dot">R</div><span>Ratublast</span></div>
+    <div class="huser">
+      <b><span id="h-username">-</span><span id="h-role" class="role-pill" style="display:none"></span></b>
+      <span id="h-coins">0 koin</span>
+    </div>
+  </header>
+
+  <main>
+    <section id="page-dashboard" class="tabpage active">
+      <div class="card">
+        <h3>Selamat Datang! <span class="badge ok">AKTIF</span></h3>
+        <p class="hint" style="margin-top:0">Koin bertambah tiap pesan sukses terkirim.</p>
+      </div>
+      <div class="card dash-pool">
+        <h3>Database Tersedia <span class="badge purple">POOL</span></h3>
+        <div style="display:flex;align-items:baseline;gap:8px">
+          <div style="font-size:38px;font-weight:900;color:var(--cyan)" id="dash-pool">0</div>
+          <div style="font-size:12px;color:var(--muted)">nomor target siap blast</div>
+        </div>
+        <div class="hint" id="dash-pool-note">—</div>
+      </div>
+      <div class="grid-4" style="margin-bottom:13px">
+        <div class="stat"><div class="lbl">Koin Saldo</div><div class="val purple" id="dash-coin">0</div></div>
+        <div class="stat"><div class="lbl">Nilai Rupiah</div><div class="val cyan" id="dash-idr">Rp 0</div></div>
+        <div class="stat"><div class="lbl">Total Pesan</div><div class="val green" id="dash-sent">0</div></div>
+        <div class="stat"><div class="lbl">Device Online</div><div class="val yellow" id="dash-online">0</div></div>
+      </div>
+      <div class="card">
+        <h3>Ringkasan <span class="badge info">LIVE</span></h3>
+        <div class="grid-2">
+          <div class="stat" style="background:var(--panel2)"><div class="lbl">Total Device</div><div class="val" id="dash-devices">0</div></div>
+          <div class="stat" style="background:var(--panel2)"><div class="lbl">Blast Aktif</div><div class="val" id="dash-active">0</div></div>
+          <div class="stat" style="background:var(--panel2)"><div class="lbl">Total Pesan</div><div class="val" id="dash-msgs">0</div></div>
+          <div class="stat" style="background:var(--panel2)"><div class="lbl">Total Gagal</div><div class="val red" id="dash-fail">0</div></div>
+        </div>
+      </div>
+      <div class="card user-only">
+        <h3>Dompet <span class="badge purple">WD</span></h3>
+        <div class="grid-2" style="margin-bottom:12px">
+          <div class="stat" style="background:var(--panel2)"><div class="lbl">Saldo Koin</div><div class="val purple" id="dash-w-coin">0</div></div>
+          <div class="stat" style="background:var(--panel2)"><div class="lbl">Nilai Rupiah</div><div class="val cyan" id="dash-w-idr">Rp 0</div></div>
+        </div>
+        <div class="hint" id="dash-w-min" style="margin-bottom:10px">—</div>
+        <button class="cyan" style="width:100%" onclick="switchTab('wallet')">BUKA HALAMAN DOMPET</button>
+      </div>
+      <div class="card"><h3>Aktivitas Terakhir</h3><div id="dash-activity"><div class="empty"><div class="icon">⚡</div>—</div></div></div>
+    </section>
+
+    <section id="page-devices" class="tabpage">
+      <div class="info-banner cyan"><b>Cara hubungkan:</b> klik HUBUNGKAN → pilih Scan QR atau Kode 8 Digit. Setelah tersambung, blast otomatis jalan.</div>
+      <div class="card">
+        <h3>Hubungkan Perangkat <span class="badge" id="dev-count">0 / 4</span></h3>
+        <div class="field"><label>Label Device</label><input id="dev-label" placeholder="device-1"></div>
+        <button style="width:100%" onclick="addDevice()">+ TAMBAH DEVICE</button>
+      </div>
+      <div id="device-list"></div>
+    </section>
+
+    <section id="page-wallet" class="tabpage">
+      <div class="card">
+        <h3>Saldo Utama</h3>
+        <div style="font-size:36px;font-weight:800;color:var(--purple)" id="w-coin">0</div>
+        <div class="hint" style="font-size:13px;color:var(--cyan);margin-top:2px" id="w-idr">≈ Rp 0</div>
+        <div class="hint" id="w-min">—</div>
+      </div>
+      <div class="card">
+        <h3>Form Penarikan</h3>
+        <div class="info-banner yellow"><b>Catatan:</b> WD masuk ke antrian admin. Admin transfer manual lalu tandai "Sudah Ditransfer".</div>
+        <div class="field"><label>Metode</label>
+          <div class="tabs-auth" style="margin-bottom:0">
+            <button id="wd-mode-ewallet" class="active" onclick="setWdMode('ewallet')">💳 E-WALLET</button>
+            <button id="wd-mode-bank" onclick="setWdMode('bank')">🏦 BANK</button>
+          </div>
+        </div>
+        <div class="field"><label>Provider / Bank</label>
+          <select id="wd-provider">
+            <option value="dana">DANA</option><option value="gopay">GoPay</option>
+            <option value="ovo">OVO</option><option value="shopeepay">ShopeePay</option>
+          </select>
+        </div>
+        <div class="field"><label id="wd-no-label">Nomor HP E-Wallet</label><input id="wd-account"></div>
+        <div class="field"><label>Nama Pemilik</label><input id="wd-name"></div>
+        <div class="field"><label>Jumlah Koin</label><input id="wd-coin" type="number">
+          <div class="hint">Rupiah: <b id="wd-preview">Rp 0</b></div>
+        </div>
+        <button style="width:100%" onclick="doWithdraw()">↓ AJUKAN PENARIKAN</button>
+      </div>
+      <div class="card"><h3>Riwayat Penarikan <button class="red sm" onclick="clearWdHistory()">HAPUS</button></h3><div id="wd-list"><div class="empty">—</div></div></div>
+      <div class="card"><h3>Riwayat Koin <button class="red sm" onclick="clearCoinHistory()">HAPUS</button></h3><div id="coin-history"><div class="empty">—</div></div></div>
+    </section>
+
+    <section id="page-messages" class="tabpage admin-only">
+      <div class="info-banner"><b>Pool pesan global.</b> Pakai <code>{nama}</code> dan spintax <code>{halo|hai|hey}</code>.</div>
+      <div class="card">
+        <h3>Tambah Pesan <span class="badge" id="msg-count">0</span></h3>
+        <div class="field"><textarea id="msg-body" rows="4" placeholder="Halo {nama}, ada promo {spesial|terbatas}."></textarea></div>
+        <button style="width:100%" onclick="addMessage()">+ TAMBAH PESAN</button>
+      </div>
+      <div class="card"><h3>Daftar Pesan</h3><div id="message-list"><div class="empty">—</div></div></div>
+    </section>
+
+    <section id="page-targets" class="tabpage admin-only">
+      <div class="info-banner"><b>Pool target global.</b> Semua nomor di sini dipakai user buat blast.</div>
+      <div class="card">
+        <h3>Import Target <span class="badge" id="target-count">0</span></h3>
+        <p class="hint" style="margin-top:0;margin-bottom:9px">Format: <code>nomor,nama,kategori</code></p>
+        <div class="field"><textarea id="target-csv" rows="7" placeholder="6281234567890,Budi,umum"></textarea></div>
+        <button style="width:100%" onclick="importTargets()">IMPORT TARGET</button>
+        <button class="red" style="width:100%;margin-top:8px" onclick="clearTargets()">HAPUS SEMUA TARGET</button>
+      </div>
+      <div class="card"><h3>Daftar Target</h3><div id="target-list"><div class="empty">—</div></div></div>
+    </section>
+
+    <section id="page-referral" class="tabpage admin-only">
+      <div class="card">
+        <h3>Program Referral</h3>
+        <p class="hint" style="margin-top:0;margin-bottom:13px">Komisi <b>Rp 50</b> per pesan sukses dari tim Anda.</p>
+        <div class="referral-box">
+          <div class="lbl" style="font-size:10px;margin-bottom:5px">KODE REFERRAL</div>
+          <div class="rcode" id="ref-code">---------</div>
+          <div class="lbl" style="font-size:10px;margin-bottom:5px;margin-top:9px">LINK REFERRAL</div>
+          <div class="rlink" id="ref-link">https://...</div>
+          <div class="row-btn">
+            <button class="ghost sm" onclick="copyText('ref-code')">SALIN KODE</button>
+            <button class="cyan sm" onclick="copyText('ref-link')">SALIN LINK</button>
+          </div>
+        </div>
+      </div>
+      <div class="card"><h3>Anggota Tim <span class="badge" id="ref-count">0</span></h3><div id="ref-users"><div class="empty">—</div></div></div>
+    </section>
+
+    <section id="page-admin" class="tabpage admin-only">
+      <div class="info-banner">Panel <b>khusus admin</b>.</div>
+      <div class="card"><h3>Statistik Sistem <span class="badge purple">ADMIN</span></h3><div class="grid-2" id="adm-stats"></div></div>
+      <div class="card">
+        <h3>Withdrawal Pending <span class="badge warn" id="adm-wd-count">0</span></h3>
+        <div id="adm-wd-list"><div class="empty">—</div></div>
+      </div>
+      <div class="card"><h3>Riwayat WD <span class="badge" id="adm-wd-all">0</span></h3><div id="adm-wd-history"></div></div>
+      <div class="card"><h3>Konfigurasi</h3><div id="adm-config"></div><button style="width:100%;margin-top:10px" onclick="saveConfig()">SIMPAN KONFIG</button></div>
+      <div class="card"><h3>Daftar User <span class="badge" id="adm-users-count">0</span></h3><div id="adm-users"><div class="empty">—</div></div></div>
+    </section>
+
+    <section id="page-profile" class="tabpage">
+      <div class="card">
+        <h3>Informasi Akun</h3>
+        <div class="field"><label>Username</label><input id="pr-username" readonly></div>
+        <div class="field"><label>Email</label><input id="pr-email" readonly></div>
+        <div class="field"><label>Kode Referral</label><input id="pr-ref" readonly></div>
+      </div>
+      <div class="card">
+        <h3>Ubah Password</h3>
+        <div class="field"><label>Password Saat Ini</label><input id="pr-old" type="password"></div>
+        <div class="field"><label>Password Baru</label><input id="pr-new" type="password"></div>
+        <div class="field"><label>Konfirmasi</label><input id="pr-new2" type="password"></div>
+        <button style="width:100%" onclick="changePassword()">SIMPAN PASSWORD</button>
+      </div>
+      <div class="card"><button class="red" style="width:100%" onclick="doLogout()">KELUAR</button></div>
+    </section>
+  </main>
+
+  <button class="cs-fab" id="cs-fab" onclick="openCS()" aria-label="CS">
+    <svg viewBox="0 0 100 100" class="spiral-svg">
+      <circle cx="50" cy="50" r="42" fill="none" stroke="#22d3ee" stroke-width="1.5" stroke-dasharray="3 6" opacity="0.35"/>
+      <circle cx="50" cy="50" r="32" fill="none" stroke="#8b5cf6" stroke-width="2" stroke-dasharray="4 8" opacity="0.65"/>
+      <circle cx="50" cy="50" r="22" fill="none" stroke="#22d3ee" stroke-width="2.5" stroke-dasharray="5 7"/>
+      <circle cx="50" cy="50" r="12" fill="none" stroke="#8b5cf6" stroke-width="3" stroke-dasharray="6 6"/>
+      <circle cx="50" cy="50" r="4" fill="#22d3ee"/>
+    </svg>
+  </button>
+
+  <div class="bottom-nav">
+    <button data-tab="dashboard" class="active" onclick="switchTab('dashboard')"><span class="ic">▦</span>Dashboard</button>
+    <button data-tab="devices" onclick="switchTab('devices')"><span class="ic">▢</span>Perangkat</button>
+    <button data-tab="wallet" class="nav-user" onclick="switchTab('wallet')"><span class="ic">$</span>Dompet</button>
+    <button data-tab="targets" class="admin-only nav-admin" onclick="switchTab('targets')"><span class="ic">☰</span>Target</button>
+    <button data-tab="messages" class="admin-only nav-admin" onclick="switchTab('messages')"><span class="ic">✉</span>Pesan</button>
+    <button data-tab="referral" class="admin-only nav-admin" onclick="switchTab('referral')"><span class="ic">◈</span>Referral</button>
+    <button data-tab="admin" class="admin-only nav-admin" onclick="switchTab('admin')"><span class="ic">⚙</span>Admin</button>
+    <button data-tab="profile" onclick="switchTab('profile')"><span class="ic">◉</span>Profil</button>
+  </div>
+</div>
+
+<div class="modal-bg" id="modal-bg"><div class="modal" id="modal-content"></div></div>
+<div class="toast" id="toast"></div>
+
+<script>
+let TOKEN = localStorage.getItem('token') || null
+let ME = null
+let WD_MODE = 'ewallet'
+let PAIR_POLL = null
+let QR_POLL = null
+let CS_LINK = ''
+let CS_LABEL = 'Hubungi CS'
+
+function setLang(lang){
+  localStorage.setItem('lang', lang)
+  document.getElementById('lang-btn').textContent = lang.toUpperCase()
+  document.getElementById('lang-menu').style.display = 'none'
+}
+function toggleLangMenu(e){
+  e.stopPropagation()
+  const m = document.getElementById('lang-menu')
+  m.style.display = m.style.display === 'block' ? 'none' : 'block'
+}
+document.addEventListener('click', () => {
+  const m = document.getElementById('lang-menu')
+  if (m) m.style.display = 'none'
+})
+setLang(localStorage.getItem('lang') || 'id')
+
+async function api(path, opts = {}) {
+  const headers = { 'Content-Type': 'application/json', ...(opts.headers || {}) }
+  if (TOKEN) headers['Authorization'] = 'Bearer ' + TOKEN
+  const r = await fetch(path, { ...opts, headers })
+  const data = await r.json().catch(() => ({}))
+  if (!r.ok) throw new Error(data.error || 'request gagal')
+  return data
+}
+function toast(msg, kind) {
+  const t = document.getElementById('toast')
+  t.textContent = msg; t.className = 'toast show ' + (kind || '')
+  clearTimeout(t._timer); t._timer = setTimeout(() => t.className = 'toast', 2600)
+}
+const fmtRp = n => 'Rp ' + (n || 0).toLocaleString('id-ID')
+const fmtN = n => (n || 0).toLocaleString('id-ID')
+const esc = s => String(s ?? '').replace(/[&<>"']/g, c => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]))
+function copyText(id) {
+  const txt = document.getElementById(id).textContent.trim()
+  if (navigator.clipboard) navigator.clipboard.writeText(txt).then(() => toast('Tersalin','ok'))
+  else { const t=document.createElement('textarea'); t.value=txt; document.body.appendChild(t); t.select(); document.execCommand('copy'); t.remove(); toast('Tersalin','ok') }
+}
+function copyRaw(txt, label) {
+  if (navigator.clipboard) navigator.clipboard.writeText(txt).then(() => toast((label||'Tersalin')+' ✓','ok'))
+}
+function openModal(html) {
+  document.getElementById('modal-content').innerHTML = html
+  document.getElementById('modal-bg').classList.add('show')
+}
+function closeModal() {
+  document.getElementById('modal-bg').classList.remove('show')
+  if (PAIR_POLL) { clearInterval(PAIR_POLL); PAIR_POLL = null }
+  if (QR_POLL) { clearInterval(QR_POLL); QR_POLL = null }
+}
+document.getElementById('modal-bg').addEventListener('click', e => { if (e.target.id === 'modal-bg') closeModal() })
+function confirmModal(title, message, onYes, opts = {}) {
+  window.__confirmCb = onYes
+  openModal(`<h3>${esc(title)}<button class="modal-x" onclick="closeModal()">✕</button></h3><p style="font-size:13px;line-height:1.6">${message}</p><div class="modal-btns"><button class="ghost" onclick="closeModal()">Batal</button><button class="${opts.danger?'red':''}" onclick="runConfirm()">${esc(opts.yesLabel||'Ya')}</button></div>`)
+}
+function runConfirm() { const cb = window.__confirmCb; closeModal(); if (cb) setTimeout(cb, 100) }
+
+document.getElementById('tab-login').onclick = () => {
+  document.getElementById('tab-login').classList.add('active')
+  document.getElementById('tab-register').classList.remove('active')
+  document.getElementById('form-login').style.display = 'block'
+  document.getElementById('form-register').style.display = 'none'
+}
+document.getElementById('tab-register').onclick = () => {
+  document.getElementById('tab-register').classList.add('active')
+  document.getElementById('tab-login').classList.remove('active')
+  document.getElementById('form-register').style.display = 'block'
+  document.getElementById('form-login').style.display = 'none'
+}
+async function doLogin() {
+  try {
+    if (!document.getElementById('not-robot').checked) return toast('Centang verifikasi dulu','err')
+    const username = document.getElementById('login-user').value.trim()
+    const password = document.getElementById('login-pass').value
+    if (!username || !password) return toast('Isi username & password','err')
+    const r = await api('/api/auth/login', { method:'POST', body: JSON.stringify({ username, password }) })
+    TOKEN = r.token; localStorage.setItem('token', TOKEN)
+    await boot()
+  } catch (e) { toast(e.message,'err') }
+}
+async function doRegister() {
+  try {
+    if (!document.getElementById('reg-not-robot').checked) return toast('Centang verifikasi dulu','err')
+    const username = document.getElementById('reg-user').value.trim()
+    const email = document.getElementById('reg-email').value.trim()
+    const password = document.getElementById('reg-pass').value
+    const ref = document.getElementById('reg-ref').value.trim()
+    if (!username || !email || !password) return toast('Semua field wajib','err')
+    await api('/api/auth/register', { method:'POST', body: JSON.stringify({ username, email, password, ref }) })
+    toast('Akun dibuat. Silakan login.','ok')
+    document.getElementById('tab-login').click()
+    document.getElementById('login-user').value = username
+    document.getElementById('login-pass').value = password
+  } catch (e) { toast(e.message,'err') }
+}
+function doLogout() {
+  confirmModal('Keluar dari akun?', 'Anda perlu login ulang.', () => {
+    localStorage.removeItem('token'); TOKEN=null; location.reload()
+  }, { yesLabel:'Keluar', danger:true })
+}
+
+async function boot() {
+  try {
+    ME = await api('/api/me')
+    document.getElementById('login-screen').style.display = 'none'
+    document.getElementById('app').style.display = 'block'
+    const isAdmin = ME.role === 'admin'
+    document.body.classList.toggle('is-admin', isAdmin)
+    document.getElementById('h-username').textContent = ME.username
+    const rp = document.getElementById('h-role')
+    rp.textContent = isAdmin ? 'ADMIN' : 'USER'
+    rp.style.display = 'inline-block'
+    document.getElementById('h-coins').textContent = fmtN(ME.coin_balance) + ' koin'
+    document.getElementById('pr-username').value = ME.username
+    document.getElementById('pr-email').value = ME.email
+    document.getElementById('pr-ref').value = ME.referral_code
+    document.getElementById('ref-code').textContent = ME.referral_code
+    document.getElementById('ref-link').textContent = location.origin + '/?ref=' + ME.referral_code
+    refreshDashboard()
+    setInterval(refreshDashboard, 3000)
+    setInterval(() => {
+      if (document.getElementById('page-devices').classList.contains('active')) refreshDevices()
+    }, 3000)
+  } catch (e) {
+    localStorage.removeItem('token'); TOKEN=null
+    document.getElementById('login-screen').style.display = 'flex'
+    document.getElementById('app').style.display = 'none'
+  }
+}
+
+function switchTab(name) {
+  document.querySelectorAll('.tabpage').forEach(p => p.classList.remove('active'))
+  document.querySelectorAll('.bottom-nav button').forEach(b => b.classList.toggle('active', b.dataset.tab === name))
+  const page = document.getElementById('page-' + name)
+  if (page) page.classList.add('active')
+  if (name === 'devices') refreshDevices()
+  if (name === 'targets' && ME.role === 'admin') refreshTargets()
+  if (name === 'messages' && ME.role === 'admin') refreshMessages()
+  if (name === 'wallet') refreshWallet()
+  if (name === 'referral' && ME.role === 'admin') refreshReferral()
+  if (name === 'dashboard') refreshDashboard()
+  if (name === 'admin' && ME.role === 'admin') refreshAdmin()
+}
+
+async function refreshDashboard() {
+  try {
+    const [me, devices, wallet, hist, pool] = await Promise.all([
+      api('/api/me'), api('/api/devices'), api('/api/wallet'),
+      api('/api/wallet/history'), api('/api/pool/info')
+    ])
+    ME = me
+    document.getElementById('h-coins').textContent = fmtN(me.coin_balance) + ' koin'
+    document.getElementById('dash-coin').textContent = fmtN(wallet.balance_coin)
+    document.getElementById('dash-idr').textContent = fmtRp(wallet.idr_value)
+    document.getElementById('dash-w-coin').textContent = fmtN(wallet.balance_coin)
+    document.getElementById('dash-w-idr').textContent = fmtRp(wallet.idr_value)
+    document.getElementById('dash-w-min').textContent = `Minimal WD: ${fmtRp(wallet.min_withdraw_coin * wallet.coin_to_idr)} (${fmtN(wallet.min_withdraw_coin)} koin)`
+    const tSent = devices.reduce((s,d) => s + (d.total_sent||0), 0)
+    const tFail = devices.reduce((s,d) => s + (d.total_fail||0), 0)
+    document.getElementById('dash-sent').textContent = fmtN(tSent)
+    document.getElementById('dash-fail').textContent = fmtN(tFail)
+    document.getElementById('dash-online').textContent = devices.filter(d => d.runtime_state === 'online').length
+    document.getElementById('dash-devices').textContent = devices.length
+    document.getElementById('dash-active').textContent = devices.filter(d => d.blast_running).length
+    document.getElementById('dash-msgs').textContent = fmtN(pool.messages_count)
+    document.getElementById('dash-pool').textContent = fmtN(pool.targets_count)
+    document.getElementById('dash-pool-note').textContent = pool.targets_count > 0
+      ? `${pool.messages_count} template pesan · ${pool.categories.length} kategori`
+      : 'Admin belum upload target.'
+    document.getElementById('dash-activity').innerHTML = hist.length
+      ? hist.slice(0,6).map(h => {
+          const sign = h.delta > 0 ? '+' : ''
+          const cls = h.delta > 0 ? 'green' : 'red'
+          const label = {send:'Pesan terkirim',withdraw:'Penarikan',referral:'Referral',adjust:'Penyesuaian'}[h.reason] || h.reason
+          return `<div class="msg-item"><span class="mtext">${label}</span><span style="color:var(--${cls});font-weight:700">${sign}${h.delta}</span></div>`
+        }).join('')
+      : '<div class="empty"><div class="icon">⚡</div>—</div>'
+    CS_LINK = pool.cs_link || ''
+    CS_LABEL = pool.cs_label || 'Hubungi CS'
+    window.__CS_channel = pool.cs_telegram_channel || ''
+    window.__CS_cs = pool.cs_telegram_cs || ''
+    const fab = document.getElementById('cs-fab')
+    const hasAny = CS_LINK || window.__CS_channel || window.__CS_cs
+    if (hasAny) fab.classList.add('show'); else fab.classList.remove('show')
+  } catch (e) {}
+}
+
+function openCS(){
+  openModal(`
+    <h3>Hubungi Kami<button class="modal-x" onclick="closeModal()">✕</button></h3>
+    <p style="font-size:12.5px;color:var(--muted);margin-bottom:14px">Pilih kanal yang Anda butuhkan:</p>
+    <div style="display:flex;flex-direction:column;gap:10px">
+      <button class="choice-btn" onclick="goCS('channel')">
+        <div class="ic-box" style="background:linear-gradient(135deg,#229ED9,#0088cc)">📢</div>
+        <div class="txt-box"><div class="t1">Channel / Grup Telegram</div><div class="t2">Info update &amp; pengumuman</div></div>
+        <div class="arrow">›</div>
+      </button>
+      <button class="choice-btn cyan-border" onclick="goCS('cs')">
+        <div class="ic-box cyan-grad">💬</div>
+        <div class="txt-box"><div class="t1">CS Telegram</div><div class="t2">Chat langsung dengan admin</div></div>
+        <div class="arrow">›</div>
+      </button>
+    </div>
+  `)
+}
+function goCS(which){
+  const link = which === 'channel' ? window.__CS_channel : window.__CS_cs
+  if (!link) return toast('Link belum diatur admin','err')
+  window.open(link, '_blank')
+}
+
+async function refreshDevices() {
+  try {
+    const devices = await api('/api/devices')
+    document.getElementById('dev-count').textContent = devices.length + ' / 4'
+    if (!devices.length) {
+      document.getElementById('device-list').innerHTML = '<div class="empty"><div class="icon">▢</div>Belum ada perangkat</div>'
+      return
+    }
+    document.getElementById('device-list').innerHTML = devices.map(d => {
+      const st = d.runtime_state
+      const badge = st === 'online' ? 'ok' : st === 'pairing' ? 'warn' : st === 'loggedout' ? 'err' : 'info'
+      const stLabel = {online:'ONLINE',pairing:'PAIRING',offline:'OFFLINE',connecting:'CONNECTING',loggedout:'LOGOUT'}[st] || st.toUpperCase()
+      const speed = d.speed_mode || 'sedang'
+      return `<div class="dev-item">
+        <div class="dev-top"><div class="dev-name">${esc(d.label)}</div><span class="badge ${badge}">${stLabel}</span></div>
+        <div class="dev-info">${d.phone ? '📱 ' + esc(d.phone) + ' · ' : ''}✓ ${fmtN(d.total_sent)} · ✗ ${fmtN(d.total_fail)}${d.blast_running ? ' · <span class="badge ok">JALAN</span>' : ''}</div>
+        <div class="dev-grid">
+          <div class="fld"><label>Kecepatan</label><select onchange="setSpeed('${d.id}', this.value)">
+            <option value="cepat" ${speed==='cepat'?'selected':''}>Cepat</option>
+            <option value="sedang" ${speed==='sedang'?'selected':''}>Sedang</option>
+            <option value="lambat" ${speed==='lambat'?'selected':''}>Lambat</option></select></div>
+          <div class="fld"><label>Auto Blast</label><select onchange="setAuto('${d.id}', this.value)">
+            <option value="1" ${d.auto_blast?'selected':''}>Aktif</option>
+            <option value="0" ${!d.auto_blast?'selected':''}>Mati</option></select></div>
+          <div class="fld"><label>Batas Harian</label><input type="number" value="${d.daily_cap||40}" onchange="setCap('${d.id}', this.value)"></div>
+          <div class="fld"><label>Kategori</label><input value="${esc(d.category||'all')}" onchange="setCategory('${d.id}', this.value)"></div>
+        </div>
+        <div class="dev-actions">
+          ${st !== 'online' ? `<button class="sm cyan" onclick="pairDevice('${d.id}', '${esc(d.label)}')">🔗 HUBUNGKAN</button>` : ''}
+          ${st === 'online' && !d.blast_running ? `<button class="sm green" onclick="startBlast('${d.id}')">▶ START</button>` : ''}
+          ${d.blast_running ? `<button class="sm red" onclick="stopBlast('${d.id}')">■ STOP</button>` : ''}
+          <button class="sm ghost" onclick="delDevice('${d.id}', '${esc(d.label)}')">HAPUS</button>
+        </div>
+      </div>`
+    }).join('')
+  } catch (e) {}
+}
+
+async function addDevice() {
+  try {
+    const label = document.getElementById('dev-label').value.trim()
+    await api('/api/devices', { method:'POST', body: JSON.stringify({ label }) })
+    document.getElementById('dev-label').value = ''
+    toast('Device ditambahkan','ok')
+    refreshDevices()
+  } catch (e) { toast(e.message,'err') }
+}
+
+async function pairDevice(id, label) {
+  if (QR_POLL) { clearInterval(QR_POLL); QR_POLL = null }
+  if (PAIR_POLL) { clearInterval(PAIR_POLL); PAIR_POLL = null }
+  const devices = await api('/api/devices').catch(() => [])
+  const d = devices.find(x => x.id === id)
+  if (d?.runtime_state === 'online') { toast('Device sudah online','ok'); return }
+  openModal(`
+    <h3>Tambah Perangkat<button class="modal-x" onclick="closeModal()">✕</button></h3>
+    <p style="font-size:12.5px;color:var(--muted);margin-bottom:14px">Pilih metode:</p>
+    <div style="display:flex;flex-direction:column;gap:10px">
+      <button class="choice-btn" onclick="openPairQR('${id}')">
+        <div class="ic-box">📷</div>
+        <div class="txt-box"><div class="t1">Scan QR Code</div><div class="t2">Pindai QR via WhatsApp</div></div>
+        <div class="arrow">›</div>
+      </button>
+      <button class="choice-btn cyan-border" onclick="openPairCode('${id}')">
+        <div class="ic-box cyan-grad">🔗</div>
+        <div class="txt-box"><div class="t1">Pairing Code (8 Digit)</div><div class="t2">Koneksikan pakai kode pairing</div></div>
+        <div class="arrow">›</div>
+      </button>
+    </div>`)
+}
+function openPairQR(id) {
+  if (QR_POLL) { clearInterval(QR_POLL); QR_POLL = null }
+  if (PAIR_POLL) { clearInterval(PAIR_POLL); PAIR_POLL = null }
+  openModal(`
+    <h3>Tambah Device — Scan QR<button class="modal-x" onclick="closeModal()">✕</button></h3>
+    <div id="pair-qr-loading" style="text-align:center;padding:30px 10px;color:var(--muted);font-size:12px">
+      <div style="font-size:34px;margin-bottom:8px;opacity:.6">⏳</div>Menyiapkan QR...
+    </div>
+    <div id="pair-qr-box" style="display:none"></div>`)
+  startQrPoll(id)
+}
+function openPairCode(id) {
+  if (QR_POLL) { clearInterval(QR_POLL); QR_POLL = null }
+  if (PAIR_POLL) { clearInterval(PAIR_POLL); PAIR_POLL = null }
+  openModal(`
+    <h3>Tambah Device — Pairing Code<button class="modal-x" onclick="closeModal()">✕</button></h3>
+    <div class="field"><label>Nomor WhatsApp Anda</label><input id="pair-phone" placeholder="Contoh: 62812xxxxxxxx"></div>
+    <div class="hint" style="margin-bottom:14px">Kode negara (62...), tanpa spasi</div>
+    <button style="width:100%" id="pair-btn" onclick="requestPair('${id}')">Mulai Pairing &amp; Dapatkan Kode</button>
+    <div id="pair-result"></div>`)
+}
+async function startQrPoll(id) {
+  if (QR_POLL) { clearInterval(QR_POLL); QR_POLL = null }
+  const fetchQr = async () => {
+    const loading = document.getElementById('pair-qr-loading')
+    const box = document.getElementById('pair-qr-box')
+    if (!box) return
+    try {
+      const r = await api(`/api/devices/${id}/qr`)
+      if (r.state === 'online') {
+        if (loading) loading.style.display = 'none'
+        box.style.display = 'block'
+        box.innerHTML = `<div style="text-align:center;padding:40px 10px;color:var(--green);font-size:16px;font-weight:700">✓ TERSAMBUNG</div>`
+        if (QR_POLL) { clearInterval(QR_POLL); QR_POLL = null }
+        toast('Pairing berhasil!','ok')
+        setTimeout(() => { closeModal(); refreshDevices() }, 1500)
+        return
+      }
+      if (r.qr) {
+        if (loading) loading.style.display = 'none'
+        box.style.display = 'block'
+        box.innerHTML = `<div style="text-align:center"><div style="background:#fff;padding:12px;border-radius:14px;display:inline-block;box-shadow:0 0 30px rgba(34,211,238,.25)"><img src="${r.qr}" style="width:240px;height:240px;display:block"></div></div>
+        <div class="pair-steps"><div class="lbl" style="margin-bottom:8px">Langkah:</div><ol>
+        <li>Buka <b>WhatsApp</b></li><li>Ketuk <b>⋮</b> → <b>Perangkat Tertaut</b></li>
+        <li>Ketuk <b>Tautkan perangkat</b></li><li>Arahkan ke <b>QR di atas</b></li></ol></div>
+        <p class="hint" style="text-align:center">QR refresh otomatis. <span id="pair-status">● Menunggu</span></p>`
+      } else if (loading) {
+        loading.style.display = 'block'
+        loading.innerHTML = `<div style="font-size:34px;margin-bottom:8px;opacity:.6">⏳</div>Menunggu QR...`
+      }
+    } catch (e) { if (loading) loading.innerHTML = `<div style="color:var(--red);font-size:12px">Gagal: ${esc(e.message)}</div>` }
+  }
+  await fetchQr()
+  QR_POLL = setInterval(fetchQr, 3000)
+}
+function startOnlineWatch(id) {
+  if (PAIR_POLL) clearInterval(PAIR_POLL)
+  PAIR_POLL = setInterval(async () => {
+    try {
+      const devices = await api('/api/devices')
+      const d = devices.find(x => x.id === id)
+      if (d?.runtime_state === 'online') {
+        clearInterval(PAIR_POLL); PAIR_POLL = null
+        const s = document.getElementById('pair-status')
+        if (s) { s.textContent = '✓ TERSAMBUNG'; s.style.color = 'var(--green)' }
+        toast('Pairing berhasil!','ok')
+        setTimeout(() => { closeModal(); refreshDevices() }, 1500)
+      }
+    } catch (e) {}
+  }, 3000)
+}
+async function requestPair(id) {
+  const phone = document.getElementById('pair-phone').value.trim()
+  if (!phone) return toast('Masukkan nomor WA','err')
+  const clean = phone.replace(/[^0-9]/g,'')
+  if (clean.length < 10) return toast('Nomor terlalu pendek','err')
+  const btn = document.getElementById('pair-btn')
+  btn.disabled = true; btn.textContent = 'Meminta kode...'
+  try {
+    const r = await api(`/api/devices/${id}/pair`, { method:'POST', body: JSON.stringify({ phone: clean }) })
+    document.getElementById('pair-result').innerHTML = `
+      <div class="pair-code-box"><div class="lbl">KODE PAIRING</div><div class="code">${esc(r.code)}</div>
+      <button class="cyan sm" onclick="copyRaw('${esc(r.code)}','Kode disalin')" style="margin-top:4px">SALIN KODE</button>
+      <div class="hint">Berlaku ~3 menit</div></div>
+      <div class="pair-steps"><ol>
+      <li>Buka <b>WhatsApp</b> di HP <code>${esc(clean)}</code></li>
+      <li><b>⋮</b> → <b>Perangkat Tertaut</b></li>
+      <li><b>Tautkan perangkat</b></li>
+      <li>Pilih <b>Tautkan dengan nomor telepon</b></li>
+      <li>Masukkan kode <b>${esc(r.code)}</b></li></ol></div>
+      <p class="hint" style="text-align:center">Menunggu... <span id="pair-status">●</span></p>`
+    btn.disabled = false; btn.textContent = 'Minta Ulang Kode'
+    startOnlineWatch(id)
+  } catch (e) {
+    toast(e.message,'err')
+    btn.disabled = false; btn.textContent = 'Mulai Pairing & Dapatkan Kode'
+  }
+}
+async function startBlast(id) { try { await api(`/api/devices/${id}/blast/start`,{method:'POST'}); toast('Blast mulai','ok'); refreshDevices() } catch(e){toast(e.message,'err')} }
+async function stopBlast(id) { try { await api(`/api/devices/${id}/blast/stop`,{method:'POST'}); toast('Blast stop','ok'); refreshDevices() } catch(e){toast(e.message,'err')} }
+function delDevice(id, label) {
+  confirmModal('Hapus device?', `Device <b style="color:var(--cyan)">${esc(label)}</b> akan dihapus.`, async () => {
+    try { await api(`/api/devices/${id}`,{method:'DELETE'}); toast('Terhapus','ok'); refreshDevices() } catch(e){toast(e.message,'err')}
+  }, { yesLabel:'Hapus', danger:true })
+}
+async function patchDev(id, body) { try { await api(`/api/devices/${id}`,{method:'PATCH',body:JSON.stringify(body)}); toast('Tersimpan','ok') } catch(e){toast(e.message,'err')} }
+const setSpeed = (id,v) => patchDev(id,{speed_mode:v})
+const setAuto = (id,v) => patchDev(id,{auto_blast: v==='1'})
+const setCategory = (id,v) => patchDev(id,{category:v})
+const setCap = (id,v) => patchDev(id,{daily_cap: parseInt(v,10)})
+
+async function refreshTargets() {
+  try {
+    const targets = await api('/api/targets')
+    document.getElementById('target-count').textContent = fmtN(targets.length)
+    if (!targets.length) { document.getElementById('target-list').innerHTML = '<div class="empty"><div class="icon">📋</div>Belum ada target</div>'; return }
+    document.getElementById('target-list').innerHTML = `<table><thead><tr><th>Nomor</th><th>Nama</th><th>Kategori</th></tr></thead><tbody>${
+      targets.slice(0,100).map(t => `<tr><td>${esc(t.phone)}</td><td>${esc(t.name||'-')}</td><td><span class="badge">${esc(t.category)}</span></td></tr>`).join('')}</tbody></table>`
+  } catch (e) {}
+}
+async function importTargets() {
+  try {
+    const csv = document.getElementById('target-csv').value
+    if (!csv.trim()) return toast('CSV kosong','err')
+    const r = await api('/api/targets/import',{method:'POST',body:JSON.stringify({csv})})
+    toast(`Tambah ${r.added} target`,'ok')
+    document.getElementById('target-csv').value = ''
+    refreshTargets()
+  } catch(e){toast(e.message,'err')}
+}
+function clearTargets() {
+  confirmModal('Hapus semua target?', 'Semua nomor target global akan dihapus.', async () => {
+    try { await api('/api/targets/clear',{method:'POST'}); toast('Terhapus','ok'); refreshTargets() } catch(e){toast(e.message,'err')}
+  }, { yesLabel:'Hapus Semua', danger:true })
+}
+async function refreshMessages() {
+  try {
+    const msgs = await api('/api/messages')
+    document.getElementById('msg-count').textContent = fmtN(msgs.length)
+    document.getElementById('message-list').innerHTML = msgs.length
+      ? msgs.map(m => `<div class="msg-item"><div class="mtext">${esc(m.body)}</div><button class="mdel" onclick="delMessage(${m.id})">✕</button></div>`).join('')
+      : '<div class="empty"><div class="icon">💬</div>Belum ada pesan</div>'
+  } catch(e){}
+}
+async function addMessage() {
+  try {
+    const body = document.getElementById('msg-body').value.trim()
+    if (!body) return toast('Pesan kosong','err')
+    await api('/api/messages',{method:'POST',body:JSON.stringify({body})})
+    document.getElementById('msg-body').value = ''
+    toast('Pesan ditambah','ok')
+    refreshMessages()
+  } catch(e){toast(e.message,'err')}
+}
+function delMessage(id) {
+  confirmModal('Hapus pesan?', 'Pesan tidak akan dipakai blast berikutnya.', async () => {
+    try { await api(`/api/messages/${id}`,{method:'DELETE'}); toast('Terhapus','ok'); refreshMessages() } catch(e){toast(e.message,'err')}
+  }, { yesLabel:'Hapus', danger:true })
+}
+function setWdMode(mode) {
+  WD_MODE = mode
+  document.getElementById('wd-mode-ewallet').classList.toggle('active', mode === 'ewallet')
+  document.getElementById('wd-mode-bank').classList.toggle('active', mode === 'bank')
+  const sel = document.getElementById('wd-provider')
+  if (mode === 'bank') {
+    sel.innerHTML = `<option value="bca">BCA</option><option value="bri">BRI</option><option value="bni">BNI</option><option value="mandiri">Mandiri</option><option value="cimb">CIMB</option><option value="permata">Permata</option>`
+    document.getElementById('wd-no-label').textContent = 'Nomor Rekening Bank'
+  } else {
+    sel.innerHTML = `<option value="dana">DANA</option><option value="gopay">GoPay</option><option value="ovo">OVO</option><option value="shopeepay">ShopeePay</option>`
+    document.getElementById('wd-no-label').textContent = 'Nomor HP E-Wallet'
+  }
+}
+document.getElementById('wd-coin')?.addEventListener('input', e => {
+  const coin = parseInt(e.target.value) || 0
+  document.getElementById('wd-preview').textContent = fmtRp(coin * 100)
+})
+async function refreshWallet() {
+  try {
+    const [w, hist, wds] = await Promise.all([api('/api/wallet'), api('/api/wallet/history'), api('/api/wallet/withdrawals')])
+    document.getElementById('w-coin').textContent = fmtN(w.balance_coin) + ' koin'
+    document.getElementById('w-idr').textContent = '≈ ' + fmtRp(w.idr_value)
+    document.getElementById('w-min').textContent = `Minimal: ${fmtN(w.min_withdraw_coin)} koin (${fmtRp(w.min_withdraw_coin * w.coin_to_idr)})`
+    document.getElementById('coin-history').innerHTML = hist.length
+      ? hist.slice(0,20).map(h => {
+          const sign = h.delta > 0 ? '+' : ''
+          const cls = h.delta > 0 ? 'green' : 'red'
+          const label = {send:'Pesan terkirim',withdraw:'Penarikan',referral:'Referral',adjust:'Penyesuaian'}[h.reason] || h.reason
+          const when = new Date(h.created_at).toLocaleString('id-ID',{dateStyle:'short',timeStyle:'short'})
+          return `<div class="msg-item"><div class="mtext">${label}<br><small style="color:var(--muted)">${when}</small></div><span style="color:var(--${cls});font-weight:700">${sign}${h.delta}</span></div>`
+        }).join('')
+      : '<div class="empty"><div class="icon">📊</div>—</div>'
+    document.getElementById('wd-list').innerHTML = wds.length
+      ? wds.map(x => {
+          const cls = {pending:'warn',approved:'info',paid:'ok',rejected:'err'}[x.status] || 'info'
+          const label = {pending:'MENUNGGU',approved:'DISETUJUI',paid:'SUDAH DITRANSFER',rejected:'DITOLAK'}[x.status] || x.status
+          const when = new Date(x.created_at).toLocaleString('id-ID',{dateStyle:'short',timeStyle:'short'})
+          return `<div class="msg-item"><div class="mtext"><b>${esc(x.method.toUpperCase())}</b> · ${esc(x.account_no)}<br><small style="color:var(--muted)">${esc(x.account_name)} · ${when}</small></div><div style="text-align:right"><div style="font-weight:700">${fmtRp(x.amount_idr)}</div><span class="badge ${cls}">${label}</span></div></div>`
+        }).join('')
+      : '<div class="empty"><div class="icon">💰</div>—</div>'
+  } catch(e){}
+}
+async function doWithdraw() {
+  try {
+    const method = document.getElementById('wd-provider').value
+    const account_no = document.getElementById('wd-account').value.trim()
+    const account_name = document.getElementById('wd-name').value.trim()
+    const coin = parseInt(document.getElementById('wd-coin').value)
+    if (!account_no || !account_name) return toast('Isi data rekening','err')
+    if (!coin || coin <= 0) return toast('Jumlah tidak valid','err')
+    const r = await api('/api/wallet/withdraw',{method:'POST',body:JSON.stringify({method,account_no,account_name,bank_code: WD_MODE==='bank'?method:null,coin})})
+    openModal(`<h3>Pengajuan Diterima ✓<button class="modal-x" onclick="closeModal()">✕</button></h3>
+      <p style="font-size:13px;line-height:1.6">WD <b style="color:var(--cyan)">${fmtRp(r.amount_idr)}</b> masuk antrian admin.</p>
+      <div class="modal-btns"><button onclick="closeModal()">OK</button></div>`)
+    document.getElementById('wd-account').value = ''
+    document.getElementById('wd-name').value = ''
+    document.getElementById('wd-coin').value = ''
+    document.getElementById('wd-preview').textContent = 'Rp 0'
+    refreshWallet()
+  } catch(e){toast(e.message,'err')}
+}
+function clearCoinHistory() {
+  confirmModal('Hapus riwayat koin?', 'Saldo nggak berubah.', async () => {
+    try { await api('/api/wallet/history',{method:'DELETE'}); toast('Riwayat dihapus','ok'); refreshWallet() } catch(e){toast(e.message,'err')}
+  }, { yesLabel:'Hapus', danger:true })
+}
+function clearWdHistory() {
+  confirmModal('Hapus riwayat WD?', 'Cuma yang selesai/ditolak.', async () => {
+    try { await api('/api/wallet/withdrawals',{method:'DELETE'}); toast('Riwayat dihapus','ok'); refreshWallet() } catch(e){toast(e.message,'err')}
+  }, { yesLabel:'Hapus', danger:true })
+}
+async function refreshReferral() {
+  try {
+    const users = await api('/api/referral/users')
+    document.getElementById('ref-count').textContent = users.length
+    document.getElementById('ref-users').innerHTML = users.length
+      ? `<table><thead><tr><th>User</th><th>Koin</th><th>Bergabung</th></tr></thead><tbody>${users.map(u => `<tr><td>${esc(u.username)}</td><td>${fmtN(u.coin_balance)}</td><td>${new Date(u.created_at).toLocaleDateString('id-ID')}</td></tr>`).join('')}</tbody></table>`
+      : '<div class="empty"><div class="icon">👥</div>—</div>'
+  } catch(e){}
+}
+async function refreshAdmin() {
+  if (ME.role !== 'admin') return
+  try {
+    const [stats, wds, cfg, users] = await Promise.all([
+      api('/api/admin/stats'), api('/api/admin/withdrawals'), api('/api/admin/config'), api('/api/admin/users')
+    ])
+    document.getElementById('adm-stats').innerHTML = `
+      <div class="stat" style="background:var(--panel2)"><div class="lbl">Users</div><div class="val">${stats.users}</div></div>
+      <div class="stat" style="background:var(--panel2)"><div class="lbl">Device</div><div class="val">${stats.devices} <small style="color:var(--green);font-size:11px">(${stats.devices_online} on)</small></div></div>
+      <div class="stat" style="background:var(--panel2)"><div class="lbl">Pool Target</div><div class="val">${stats.targets}</div></div>
+      <div class="stat" style="background:var(--panel2)"><div class="lbl">Pesan</div><div class="val green">${fmtN(stats.total_sent)}</div></div>
+      <div class="stat" style="background:var(--panel2)"><div class="lbl">WD Pending</div><div class="val yellow">${stats.wd_pending}</div></div>
+      <div class="stat" style="background:var(--panel2)"><div class="lbl">Koin Beredar</div><div class="val purple">${fmtN(stats.coins_circulating)}</div></div>`
+    const pend = wds.filter(w => w.status === 'pending')
+    document.getElementById('adm-wd-count').textContent = pend.length
+    document.getElementById('adm-wd-list').innerHTML = pend.length
+      ? pend.map(w => `<div class="msg-item" style="flex-direction:column;align-items:stretch">
+          <div class="mtext"><b style="color:var(--cyan);font-size:13px">${esc(w.username)}</b> · <span class="badge warn">PENDING</span></div>
+          <div class="wd-detail">
+            <div><span class="k">Metode:</span> <span class="v">${esc(w.method.toUpperCase())}</span></div>
+            <div><span class="k">Nomor:</span> <span class="v">${esc(w.account_no)}</span></div>
+            <div><span class="k">Nama:</span> <span class="v">${esc(w.account_name)}</span></div>
+            <div><span class="k">Jumlah:</span> <span class="v">${fmtRp(w.amount_idr)}</span> (${fmtN(w.amount_coin)} koin)</div>
+          </div>
+          <div class="row-btn" style="margin-top:10px">
+            <button class="sm green" onclick="admWdMark(${w.id})">✓ SUDAH DITRANSFER</button>
+            <button class="sm red" onclick="admWdReject(${w.id})">✕ TOLAK</button>
+          </div></div>`).join('')
+      : '<div class="empty">Tidak ada WD pending</div>'
+    document.getElementById('adm-wd-all').textContent = wds.length
+    document.getElementById('adm-wd-history').innerHTML = wds.length
+      ? `<table><thead><tr><th>User</th><th>Jumlah</th><th>Metode</th><th>Status</th></tr></thead><tbody>${wds.slice(0,50).map(w => {
+          const cls = {pending:'warn',approved:'info',paid:'ok',rejected:'err'}[w.status] || 'info'
+          return `<tr><td>${esc(w.username)}</td><td>${fmtRp(w.amount_idr)}</td><td>${esc(w.method.toUpperCase())}</td><td><span class="badge ${cls}">${w.status.toUpperCase()}</span></td></tr>`
+        }).join('')}</tbody></table>`
+      : '<div class="empty">—</div>'
+    document.getElementById('adm-config').innerHTML = Object.entries(cfg).map(([k,v]) =>
+      `<div class="field"><label>${esc(k)}</label><input id="cfg-${esc(k)}" value="${esc(v)}"></div>`).join('')
+    document.getElementById('adm-users-count').textContent = users.length
+    document.getElementById('adm-users').innerHTML = `<table><thead><tr><th>User</th><th>Email</th><th>Role</th><th>Koin</th><th></th></tr></thead><tbody>${
+      users.map(u => `<tr><td>${esc(u.username)}</td><td style="color:var(--muted);font-size:10.5px">${esc(u.email)}</td><td><span class="badge ${u.role==='admin'?'purple':''}">${u.role}</span></td><td>${fmtN(u.coin_balance)}</td><td><button class="red sm" onclick="delUser(${u.id},'${esc(u.username)}')">✕</button></td></tr>`).join('')}</tbody></table>`
+  } catch(e){console.error(e)}
+}
+function admWdMark(id) {
+  confirmModal('Tandai sudah transfer?', 'Pastikan Anda sudah transfer ke user.', async () => {
+    try { await api(`/api/admin/withdrawals/${id}/paid`,{method:'POST',body:JSON.stringify({note:'Sudah ditransfer'})}); toast('Ditandai','ok'); refreshAdmin() }
+    catch(e){toast(e.message,'err')}
+  }, { yesLabel:'Ya, sudah transfer' })
+}
+function admWdReject(id) {
+  openModal(`<h3>Tolak WD<button class="modal-x" onclick="closeModal()">✕</button></h3>
+    <p style="font-size:13px;line-height:1.6;margin-bottom:12px">Koin dikembalikan ke saldo user.</p>
+    <div class="field"><label>Alasan</label><input id="reject-note" placeholder="Data rekening tidak valid"></div>
+    <div class="modal-btns"><button class="ghost" onclick="closeModal()">Batal</button><button class="red" onclick="doReject(${id})">Tolak &amp; Refund</button></div>`)
+}
+async function doReject(id) {
+  const note = document.getElementById('reject-note').value.trim() || 'Ditolak admin'
+  closeModal()
+  try { await api(`/api/admin/withdrawals/${id}/reject`,{method:'POST',body:JSON.stringify({note})}); toast('Ditolak & refund','ok'); refreshAdmin() }
+  catch(e){toast(e.message,'err')}
+}
+function delUser(id, name) {
+  confirmModal('Hapus user?', `User <b style="color:var(--cyan)">${esc(name)}</b> akan dihapus permanen.`, async () => {
+    try { await api(`/api/admin/users/${id}`,{method:'DELETE'}); toast('User dihapus','ok'); refreshAdmin() }
+    catch(e){toast(e.message,'err')}
+  }, { yesLabel:'Hapus', danger:true })
+}
+async function saveConfig() {
+  try {
+    const cfg = await api('/api/admin/config')
+    const body = {}
+    Object.keys(cfg).forEach(k => { body[k] = document.getElementById('cfg-'+k).value })
+    await api('/api/admin/config',{method:'POST',body:JSON.stringify(body)})
+    toast('Konfig tersimpan','ok')
+  } catch(e){toast(e.message,'err')}
+}
+async function changePassword() {
+  try {
+    const old_password = document.getElementById('pr-old').value
+    const new_password = document.getElementById('pr-new').value
+    const new2 = document.getElementById('pr-new2').value
+    if (new_password !== new2) return toast('Konfirmasi tidak cocok','err')
+    if (new_password.length < 6) return toast('Minimal 6 karakter','err')
+    await api('/api/me/password',{method:'POST',body:JSON.stringify({old_password,new_password})})
+    toast('Password diubah','ok')
+    document.getElementById('pr-old').value = ''
+    document.getElementById('pr-new').value = ''
+    document.getElementById('pr-new2').value = ''
+  } catch(e){toast(e.message,'err')}
+}
+
+if (TOKEN) boot()
+</script>
+</body>
+</html>
